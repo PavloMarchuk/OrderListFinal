@@ -1,0 +1,94 @@
+﻿@model WebUI.Models.BusinessViewModels.FilterGas
+@{
+	ViewData["Title"] = "Filter";
+}
+<h2><img src="~/images/logo.png" /></h2>
+<div class="row">
+	@using (Html.BeginForm("Filter", "Invoices", FormMethod.Post, new { id = "frmfind" }))
+	{
+
+		<div class="col-md-4">
+			<div class="form-group">
+				<label asp-for="ManagerIdFilter" class="control-label"></label>
+				<select id="ManagerIdFilter" name="ManagerIdFilter" class="form-control" asp-items="ViewBag.ManagerIdFilter"></select>
+			</div>			
+			<input asp-for="PageIndex" />
+			<input asp-for="PageSize" />
+			<input asp-for="SortOrder" />
+			<input asp-for="NameSortParm" />
+			<input asp-for="DateSortParm" />
+		</div>
+	}
+</div>
+
+
+<div class="row" id="invoiceslist">
+
+</div>
+
+
+
+<div class="modal fade">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Modal title</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<p>Modal body text goes here.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary">Save changes</button>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+	<script type="text/javascript">
+		$(function () {
+
+			//метод серіалізацяї і відправки форми фільтрації
+			var upDateFilter = function () {
+				var frm = $('#frmfind');// форма
+				var frmdata = frm.serialize(); // модель з форми в формі json строки
+				$.post("/Invoices/Filter/", frmdata,
+					function (data) {
+						if (data == "OK") {
+							//$('#CurrentPageButton').text($('#PageIndex').val())
+							$('#invoiceslist').load('@Url.Action("ListFilter", "Invoices")', frmdata);
+						}
+					});
+			};
+			upDateFilter();
+
+			// вішаємо обработчик на кнопки переходу по сторінках після їх підгрузки
+			$('body').on("mouseover mouseout", function () {
+				$('.pagerli').click(function () {
+					this.disabled = true;
+					var currentPage = Number(this.getAttribute("nextPage"));					
+					$('#PageIndex').val(Number(currentPage));
+					upDateFilter();
+				});
+
+				//сортування відключено
+				//$('.SortParm').click(function () { 					
+				//	$('#SortOrder').val(this.getAttribute("sortingMethod"));
+				//	upDateFilter();
+				//});
+			});
+
+			//при зміні вибраного менеджера
+			$('#ManagerIdFilter').change(function () { upDateFilter(); });
+		});
+	</script>
+}
+
+

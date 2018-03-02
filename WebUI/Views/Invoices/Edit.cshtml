@@ -1,0 +1,100 @@
+﻿@model DateLayer.Models.Invoice
+
+@{
+	ViewData["Title"] = ViewBag.EditMessage;
+}
+<link href="~/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker.css" rel="stylesheet" />
+<h2>@ViewBag.EditMessage</h2>
+
+<hr />
+
+<form asp-action="Edit">
+	<div class="row">
+		<div class="col-md-4">
+
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="Id" />
+			<div class="form-group">
+				<label asp-for="InvoiceNumber" class="control-label"></label>
+				<input asp-for="InvoiceNumber" class="form-control" />
+				<span asp-validation-for="InvoiceNumber" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="DateCreated" class="control-label"></label>
+				<div class="input-group date"
+					 data-provide="datepicker"
+					 data-date-autoclose="true"
+					 data-date-format="dd MM yyyy"
+					 data-date-language="uk">
+					<input asp-for="DateCreated" type="text" class="form-control" name="DateCreated" />
+					<div class="input-group-addon">
+						<span class="glyphicon glyphicon-th-large"></span>
+					</div>
+				</div>
+				@*<input asp-for="DateCreated" class="form-control" value="@DateTime.Today" />*@
+				<span asp-validation-for="DateCreated" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="DateOfShipment" class="control-label"></label>
+				<div class="input-group date"
+					 data-provide="datepicker"
+					 @*data-date-calendar-weeks="true" *@
+					 data-date-autoclose="true"
+					 data-date-format="dd MM yyyy"
+					 data-date-language="uk"
+					 data-date-clear-btn="true">
+					<input asp-for="DateOfShipment" type="text" class="form-control" name="DateOfShipment" />
+					<div class="input-group-addon">
+						<span class="glyphicon glyphicon-th-large"></span>
+					</div>
+				</div>
+				@*<input asp-for="DateOfShipment" class="form-control" />*@
+				<span asp-validation-for="DateOfShipment" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="ManagerId" class="control-label"></label>
+				<select asp-for="ManagerId" class="form-control" asp-items="ViewBag.ManagerIdEditor"></select>
+				<span asp-validation-for="ManagerId" class="text-danger"></span>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col col-md8">
+			<div class="form-group">
+				<label asp-for="Annotation" class="control-label"></label>
+				<textarea rows="5" asp-for="Annotation" class="form-control"></textarea>
+				<span asp-validation-for="Annotation" class="text-danger"></span>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col col-md6">
+			<div class="form-group">
+				<input type="submit" value="Підтвердити @ViewBag.EditMessage" class="btn btn-danger" />
+			</div>
+		</div>
+	</div>
+
+	<hr />
+	<div class="row">		
+		<div class="col col-md6">
+			<a asp-action="Filter" class="btn btn-primary">Відмінити і повернутися до списку</a>
+		</div>
+
+	</div>
+
+</form>
+
+
+
+@section Scripts
+	{
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	<script src="~/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+	<script src="~/lib/bootstrap-datepicker/dist/locales/bootstrap-datepicker.uk.min.js"></script>
+
+
+
+
+}

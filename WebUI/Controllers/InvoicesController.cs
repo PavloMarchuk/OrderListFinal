@@ -14,13 +14,11 @@ namespace WebUI.Controllers
 {
 	[Authorize]
 	public class InvoicesController : Controller
-	{
-		private readonly KyivgazDBContext _context;
+	{		
 		IGenericRepository<Invoice> invoiceRep;
 		IGenericRepository<Manager> мanagerRep;
-		public InvoicesController(KyivgazDBContext context, IGenericRepository<Invoice> invoiceRep, IGenericRepository<Manager> мanagerRep)
-		{
-			_context = context;
+		public InvoicesController( IGenericRepository<Invoice> invoiceRep, IGenericRepository<Manager> мanagerRep)
+		{			
 			this.invoiceRep = invoiceRep;
 			this.мanagerRep = мanagerRep;
 		}
@@ -30,7 +28,7 @@ namespace WebUI.Controllers
 		{
 			// зброс сторінок
 			FilterGas filter = new FilterGas { PageIndex = 1, PageSize = 5};
-			ViewData["ManagerIdFilter"] = new SelectList(GetEmpty.Union(_context.Manager), "Id", "LastName");
+			ViewData["ManagerIdFilter"] = new SelectList(GetEmpty.Union(мanagerRep.GetAll()), "Id", "LastName");
 			return View(filter);
 		}
 
@@ -56,7 +54,7 @@ namespace WebUI.Controllers
 
 		public async Task<IActionResult> Edit(int? id)
 		{
-			ViewData["ManagerIdEditor"] = new SelectList(GetEmpty.Union(_context.Manager), "Id", "LastName");
+			ViewData["ManagerIdEditor"] = new SelectList(GetEmpty.Union(мanagerRep.GetAll()), "Id", "LastName");
 
 			//якщо не вказано ID, створимо нову накладну
 			if (id == null | id == 0)
@@ -64,7 +62,7 @@ namespace WebUI.Controllers
 
 				ViewData["EditMessage"] = "Створення нової накладної";
 				//максимальний номер накладної		
-				int num = _context.Invoice.Max(Inv => Inv.Id);
+				int num = invoiceRep.GetAll().Max(Inv => Inv.Id);
 				num++;
 				Invoice model = new Invoice
 				{
@@ -77,7 +75,7 @@ namespace WebUI.Controllers
 			}
 
 			// як що редагуємо стару
-			var invoice = await _context.Invoice.SingleOrDefaultAsync(m => m.Id == id);
+			var invoice = await invoiceRep.GetAll().SingleOrDefaultAsync(m => m.Id == id);
 			if (invoice == null)
 			{
 				return NotFound();
@@ -106,10 +104,8 @@ namespace WebUI.Controllers
 					}
 					else
 					{
-						/*await*/
-						invoiceRep.Update(model, model.Id);
+						await invoiceRep.UpdateAsyn(model, model.Id);
 					}
-					await _context.SaveChangesAsync();
 				}
 				catch (DbUpdateConcurrencyException)
 				{
@@ -124,7 +120,7 @@ namespace WebUI.Controllers
 				}
 				return RedirectToAction(nameof(Filter));
 			}
-			ViewData["ManagerId"] = new SelectList(_context.Manager, "Id", "LastName", model.ManagerId);
+			ViewData["ManagerId"] = new SelectList(мanagerRep.GetAll(), "Id", "LastName", model.ManagerId);
 			return View(model);
 		}
 
@@ -144,7 +140,7 @@ namespace WebUI.Controllers
 		}
 		private bool InvoiceExists(int id)
 		{
-			return _context.Invoice.Any(e => e.Id == id);
+			return invoiceRep.GetAll().Any(e => e.Id == id);
 		}
 	}
 }

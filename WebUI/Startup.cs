@@ -29,8 +29,7 @@ namespace WebUI
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+       
         public void ConfigureServices(IServiceCollection services)
         {
 			services.Configure<WebEncoderOptions>(options => {options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);	});
@@ -55,10 +54,7 @@ namespace WebUI
 			services.AddScoped<DbContext, KyivgazDBContext>();
 			services.AddTransient<IGenericRepository<Invoice>, InvoiceRepository>();
 			services.AddTransient<IGenericRepository<Manager>, ManagerRepository>();
-
-
-			//ManagerViewModel
-
+					
 			services.AddMvc();
         }
 
